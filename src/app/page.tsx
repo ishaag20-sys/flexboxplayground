@@ -656,18 +656,24 @@ export default function FlexboxForgePage() {
                         </div>
                     )}
                 </TabsContent>
-                <TabsContent value="templates" className="space-y-4 pt-6">
-                  {templates.map(template => (
-                    <Card key={template.name} className="cursor-pointer hover:bg-muted/50 transition-colors" onClick={() => applyTemplate(template)}>
-                        <CardHeader className='flex-row items-center gap-4 space-y-0'>
-                            <template.icon className="h-6 w-6 text-primary" />
-                            <div>
-                                <CardTitle className='text-base'>{template.name}</CardTitle>
-                                <CardDescription className='text-xs mt-1'>{template.description}</CardDescription>
+                <TabsContent value="templates" className="pt-6">
+                    <div className="grid grid-cols-1 gap-3">
+                        {templates.map((template) => (
+                            <div
+                            key={template.name}
+                            className="flex items-center gap-4 rounded-lg border p-3 cursor-pointer hover:bg-muted/50 transition-colors"
+                            onClick={() => applyTemplate(template)}
+                            >
+                            <div className="flex h-10 w-10 items-center justify-center rounded-md bg-primary/10 text-primary">
+                                <template.icon className="h-6 w-6" />
                             </div>
-                        </CardHeader>
-                    </Card>
-                  ))}
+                            <div className="flex-1">
+                                <p className="font-semibold text-sm">{template.name}</p>
+                                <p className="text-xs text-muted-foreground">{template.description}</p>
+                            </div>
+                            </div>
+                        ))}
+                    </div>
                 </TabsContent>
               </Tabs>
             </div>
