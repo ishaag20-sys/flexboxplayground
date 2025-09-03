@@ -415,20 +415,20 @@ export default function FlexboxForgePage() {
       alignContent,
       gap: `${gap}px`,
     };
-    const containerStyleString = `const containerStyle = {\n${Object.entries(containerStyle)
+    const containerStyleString = `const containerStyle: CSSProperties = {\n${Object.entries(containerStyle)
       .map(([key, value]) => `  ${key}: '${value}',`)
       .join('\n')}\n};`;
 
     const itemsStyleString = items.map((item, i) => {
-        const itemStyle: CSSProperties = {
+        const itemStyle: Partial<CSSProperties> = {
             flexGrow: item.grow,
             flexShrink: item.shrink,
             flexBasis: item.basis,
             order: item.order,
             alignSelf: item.alignSelf,
         };
-        return `const item${i+1}Style = {\n${Object.entries(itemStyle)
-            .map(([key, value]) => `  ${key}: '${value}',`)
+        return `const item${i+1}Style: CSSProperties = {\n${Object.entries(itemStyle)
+            .map(([key, value]) => `  ${key}: ${typeof value === 'string' ? `'${value}'` : value},`)
             .join('\n')}\n};`
     }).join('\n\n');
 
@@ -462,11 +462,11 @@ export default function FlexboxForgePage() {
 
   const generatedTailwindClasses = useMemo(() => {
       return `Container classes: "${generatedTailwindContainerClasses}"\n\n` + items.map((item, i) => `Item ${i+1} classes: "${generatedTailwindItemClasses(item)}"`).join('\n');
-  }, [generatedTailwindContainerClasses, items]);
+  }, [generatedTailwindContainerClasses, items, generatedTailwindItemClasses]);
 
   const generatedReactComponent = useMemo(() => {
     return `<div className="${generatedTailwindContainerClasses}">\n  ${items.map((item, i) => `<div className="${generatedTailwindItemClasses(item)} bg-primary text-primary-foreground p-4 rounded-md">Item ${i + 1}</div>`).join('\n  ')}\n</div>`;
-  }, [generatedTailwindContainerClasses, items]);
+  }, [generatedTailwindContainerClasses, items, generatedTailwindItemClasses]);
 
   const handleCopy = () => {
     const textToCopy =
