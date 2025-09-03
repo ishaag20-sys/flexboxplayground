@@ -4,6 +4,8 @@
 import type { CSSProperties } from 'react';
 import { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { atomDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import {
   Select,
   SelectContent,
@@ -761,30 +763,30 @@ export default function FlexboxForgePage() {
               </TabsList>
               <TabsContent value="css">
                 <div className="relative mt-4 h-48 w-full rounded-md bg-muted/50">
-                  <pre className="h-full w-full overflow-auto p-4 text-sm font-mono">
-                    <code>{generatedCss}</code>
-                  </pre>
+                  <SyntaxHighlighter language="css" style={atomDark} customStyle={{ margin: 0, padding: '1rem', backgroundColor: 'transparent' }} codeTagProps={{style: {fontFamily: 'monospace'}}}>
+                    {generatedCss}
+                  </SyntaxHighlighter>
                 </div>
               </TabsContent>
               <TabsContent value="react">
-                <div className="relative mt-4 h-48 w-full rounded-md bg-muted/50">
-                  <pre className="h-full w-full overflow-auto p-4 text-sm font-mono">
-                    <code>{generatedReactStyle}</code>
-                  </pre>
+                 <div className="relative mt-4 h-48 w-full rounded-md bg-muted/50">
+                  <SyntaxHighlighter language="javascript" style={atomDark} customStyle={{ margin: 0, padding: '1rem', backgroundColor: 'transparent' }} codeTagProps={{style: {fontFamily: 'monospace'}}}>
+                    {generatedReactStyle}
+                  </SyntaxHighlighter>
                 </div>
               </TabsContent>
               <TabsContent value="tailwind">
-                <div className="relative mt-4 h-48 w-full rounded-md bg-muted/50">
-                  <pre className="h-full w-full overflow-auto p-4 text-sm font-mono">
-                    <code>{generatedTailwindClasses}</code>
-                  </pre>
+                 <div className="relative mt-4 h-48 w-full rounded-md bg-muted/50">
+                  <SyntaxHighlighter language="shell" style={atomDark} customStyle={{ margin: 0, padding: '1rem', backgroundColor: 'transparent' }} codeTagProps={{style: {fontFamily: 'monospace'}}}>
+                    {generatedTailwindClasses}
+                  </SyntaxHighlighter>
                 </div>
               </TabsContent>
               <TabsContent value="component">
-                <div className="relative mt-4 h-48 w-full rounded-md bg-muted/50">
-                  <pre className="h-full w-full overflow-auto p-4 text-sm font-mono">
-                    <code>{generatedReactComponent}</code>
-                  </pre>
+                 <div className="relative mt-4 h-48 w-full rounded-md bg-muted/50">
+                   <SyntaxHighlighter language="jsx" style={atomDark} customStyle={{ margin: 0, padding: '1rem', backgroundColor: 'transparent' }} codeTagProps={{style: {fontFamily: 'monospace'}}}>
+                    {generatedReactComponent}
+                  </SyntaxHighlighter>
                 </div>
               </TabsContent>
             </Tabs>
@@ -794,5 +796,3 @@ export default function FlexboxForgePage() {
     </main>
   );
 }
-
-    
