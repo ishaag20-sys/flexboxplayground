@@ -56,6 +56,7 @@ import {
   ArrowDown,
   RefreshCw,
   ListOrdered,
+  Github,
 } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
@@ -555,10 +556,6 @@ export default function FlexboxForgePage() {
       <aside className="w-[30%] h-full border-r border-border">
         <ScrollArea className="h-full">
           <div className="p-4">
-            <div className="text-center mb-8">
-              <h1 className="text-2xl font-bold tracking-tight">Flexbox Forge</h1>
-              <p className="text-muted-foreground mt-1 text-sm">Visually craft and generate CSS for modern layouts.</p>
-            </div>
             <div className="space-y-6">
               <Tabs defaultValue="container">
                 <TabsList className="grid w-full grid-cols-3">
@@ -730,67 +727,81 @@ export default function FlexboxForgePage() {
         </ScrollArea>
       </aside>
 
-      <div className="w-[70%] h-full flex flex-col p-4 md:p-6 gap-6">
-        <div className="flex-grow flex flex-col rounded-lg border bg-card text-card-foreground shadow-sm">
-          <CardHeader>
-            <CardTitle>Live Preview</CardTitle>
-          </CardHeader>
-          <CardContent className="flex-grow flex items-center justify-center">
-            <motion.div layout style={flexStyle} className="rounded-lg border-2 border-dashed p-4 w-full h-full bg-background">
-              <AnimatePresence>
-                {items.map((item, index) => renderItem(item, index))}
-              </AnimatePresence>
-            </motion.div>
-          </CardContent>
-        </div>
+      <div className="w-[70%] h-full flex flex-col">
+        <header className="flex items-center justify-between p-4 border-b">
+          <div>
+            <h1 className="text-2xl font-bold tracking-tight">Flex Playground</h1>
+            <p className="text-muted-foreground mt-1 text-sm">Visually craft and generate CSS for modern layouts.</p>
+          </div>
+          <a href="#" target="_blank" rel="noopener noreferrer">
+            <Button variant="outline" size="icon">
+              <Github className="h-5 w-5" />
+            </Button>
+          </a>
+        </header>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between">
-            <div>
-              <CardTitle>Code</CardTitle>
-              <CardDescription>Copy the generated snippet for your project.</CardDescription>
-            </div>
-            <Button onClick={handleCopy} size="icon" variant="ghost"><Clipboard className="h-5 w-5" /></Button>
-          </CardHeader>
-          <CardContent>
-            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-              <TabsList className="grid w-full grid-cols-4">
-                <TabsTrigger value="css">CSS</TabsTrigger>
-                <TabsTrigger value="react">React Style</TabsTrigger>
-                <TabsTrigger value="tailwind">Tailwind</TabsTrigger>
-                <TabsTrigger value="component">Component</TabsTrigger>
-              </TabsList>
-              <TabsContent value="css">
-                <div className="relative mt-4 h-48 w-full rounded-md bg-muted/50 overflow-auto">
-                  <SyntaxHighlighter language="css" style={atomDark} customStyle={{ margin: 0, padding: '1rem', backgroundColor: 'transparent' }} codeTagProps={{style: {fontFamily: 'monospace'}}} wrapLongLines>
-                    {generatedCss}
-                  </SyntaxHighlighter>
-                </div>
-              </TabsContent>
-              <TabsContent value="react">
-                 <div className="relative mt-4 h-48 w-full rounded-md bg-muted/50 overflow-auto">
-                  <SyntaxHighlighter language="javascript" style={atomDark} customStyle={{ margin: 0, padding: '1rem', backgroundColor: 'transparent' }} codeTagProps={{style: {fontFamily: 'monospace'}}} wrapLongLines>
-                    {generatedReactStyle}
-                  </SyntaxHighlighter>
-                </div>
-              </TabsContent>
-              <TabsContent value="tailwind">
-                 <div className="relative mt-4 h-48 w-full rounded-md bg-muted/50 overflow-auto">
-                  <SyntaxHighlighter language="shell" style={atomDark} customStyle={{ margin: 0, padding: '1rem', backgroundColor: 'transparent' }} codeTagProps={{style: {fontFamily: 'monospace'}}} wrapLongLines>
-                    {generatedTailwindClasses}
-                  </SyntaxHighlighter>
-                </div>
-              </TabsContent>
-              <TabsContent value="component">
-                 <div className="relative mt-4 h-48 w-full rounded-md bg-muted/50 overflow-auto">
-                   <SyntaxHighlighter language="jsx" style={atomDark} customStyle={{ margin: 0, padding: '1rem', backgroundColor: 'transparent' }} codeTagProps={{style: {fontFamily: 'monospace'}}} wrapLongLines>
-                    {generatedReactComponent}
-                  </SyntaxHighlighter>
-                </div>
-              </TabsContent>
-            </Tabs>
-          </CardContent>
-        </Card>
+        <div className="flex-grow p-4 md:p-6 flex flex-col gap-6">
+          <div className="flex-grow flex flex-col rounded-lg border bg-card text-card-foreground shadow-sm">
+            <CardHeader>
+              <CardTitle>Live Preview</CardTitle>
+            </CardHeader>
+            <CardContent className="flex-grow flex items-center justify-center">
+              <motion.div layout style={flexStyle} className="rounded-lg border-2 border-dashed p-4 w-full h-full bg-background">
+                <AnimatePresence>
+                  {items.map((item, index) => renderItem(item, index))}
+                </AnimatePresence>
+              </motion.div>
+            </CardContent>
+          </div>
+
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between">
+              <div>
+                <CardTitle>Code</CardTitle>
+                <CardDescription>Copy the generated snippet for your project.</CardDescription>
+              </div>
+              <Button onClick={handleCopy} size="icon" variant="ghost"><Clipboard className="h-5 w-5" /></Button>
+            </CardHeader>
+            <CardContent>
+              <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+                <TabsList className="grid w-full grid-cols-4">
+                  <TabsTrigger value="css">CSS</TabsTrigger>
+                  <TabsTrigger value="react">React Style</TabsTrigger>
+                  <TabsTrigger value="tailwind">Tailwind</TabsTrigger>
+                  <TabsTrigger value="component">Component</TabsTrigger>
+                </TabsList>
+                <TabsContent value="css">
+                  <div className="relative mt-4 h-48 w-full rounded-md bg-muted/50 overflow-auto">
+                    <SyntaxHighlighter language="css" style={atomDark} customStyle={{ margin: 0, padding: '1rem', backgroundColor: 'transparent' }} codeTagProps={{style: {fontFamily: 'monospace'}}} wrapLongLines>
+                      {generatedCss}
+                    </SyntaxHighlighter>
+                  </div>
+                </TabsContent>
+                <TabsContent value="react">
+                   <div className="relative mt-4 h-48 w-full rounded-md bg-muted/50 overflow-auto">
+                    <SyntaxHighlighter language="javascript" style={atomDark} customStyle={{ margin: 0, padding: '1rem', backgroundColor: 'transparent' }} codeTagProps={{style: {fontFamily: 'monospace'}}} wrapLongLines>
+                      {generatedReactStyle}
+                    </SyntaxHighlighter>
+                  </div>
+                </TabsContent>
+                <TabsContent value="tailwind">
+                   <div className="relative mt-4 h-48 w-full rounded-md bg-muted/50 overflow-auto">
+                    <SyntaxHighlighter language="shell" style={atomDark} customStyle={{ margin: 0, padding: '1rem', backgroundColor: 'transparent' }} codeTagProps={{style: {fontFamily: 'monospace'}}} wrapLongLines>
+                      {generatedTailwindClasses}
+                    </SyntaxHighlighter>
+                  </div>
+                </TabsContent>
+                <TabsContent value="component">
+                   <div className="relative mt-4 h-48 w-full rounded-md bg-muted/50 overflow-auto">
+                     <SyntaxHighlighter language="jsx" style={atomDark} customStyle={{ margin: 0, padding: '1rem', backgroundColor: 'transparent' }} codeTagProps={{style: {fontFamily: 'monospace'}}} wrapLongLines>
+                      {generatedReactComponent}
+                    </SyntaxHighlighter>
+                  </div>
+                </TabsContent>
+              </Tabs>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </main>
   );

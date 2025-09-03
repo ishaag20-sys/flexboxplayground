@@ -3,7 +3,7 @@ import './globals.css';
 import { Toaster } from "@/components/ui/toaster"
 
 export const metadata: Metadata = {
-  title: 'Flexbox Forge',
+  title: 'Flex Playground',
   description: 'A modern Flexbox generator to build layouts with ease.',
 };
 
