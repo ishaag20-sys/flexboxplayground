@@ -95,6 +95,30 @@ const alignItemsOptions = {
     ]
 };
 
+const tailwindFlexDirectionMap: Record<FlexboxProps['flexDirection'], string> = {
+    row: 'flex-row',
+    column: 'flex-col',
+    'row-reverse': 'flex-row-reverse',
+    'column-reverse': 'flex-col-reverse',
+  };
+  
+  const tailwindJustifyContentMap: Record<FlexboxProps['justifyContent'], string> = {
+    'flex-start': 'justify-start',
+    center: 'justify-center',
+    'flex-end': 'justify-end',
+    'space-between': 'justify-between',
+    'space-around': 'justify-around',
+    'space-evenly': 'justify-evenly',
+  };
+  
+  const tailwindAlignItemsMap: Record<FlexboxProps['alignItems'], string> = {
+    stretch: 'items-stretch',
+    'flex-start': 'items-start',
+    center: 'items-center',
+    'flex-end': 'items-end',
+    baseline: 'items-baseline',
+  };
+
 export default function FlexboxForgePage() {
   const { toast } = useToast();
   
@@ -135,12 +159,35 @@ export default function FlexboxForgePage() {
       .join('\n')}\n};`;
   }, [flexDirection, justifyContent, alignItems, gap]);
 
+  const generatedTailwindClasses = useMemo(() => {
+    const classes = [
+      'flex',
+      tailwindFlexDirectionMap[flexDirection],
+      tailwindJustifyContentMap[justifyContent],
+      tailwindAlignItemsMap[alignItems],
+      `gap-[${gap}px]`,
+    ];
+    return classes.join(' ');
+  }, [flexDirection, justifyContent, alignItems, gap]);
+
+  const generatedReactComponent = useMemo(() => {
+    return `<div className="${generatedTailwindClasses}">\n  ${items.map((_, i) => `<div>Item ${i + 1}</div>`).join('\n  ')}\n</div>`;
+  }, [generatedTailwindClasses, items]);
+
   const handleCopy = () => {
-    const textToCopy = activeTab === 'css' ? generatedCss : generatedReactStyle;
+    const textToCopy =
+      activeTab === 'css'
+        ? generatedCss
+        : activeTab === 'react'
+        ? generatedReactStyle
+        : activeTab === 'tailwind'
+        ? generatedTailwindClasses
+        : generatedReactComponent;
+
     navigator.clipboard.writeText(textToCopy).then(() => {
       toast({
         title: 'Copied to Clipboard!',
-        description: `The ${activeTab.toUpperCase()} code has been copied.`,
+        description: `The ${activeTab === 'react' ? 'React Style' : activeTab === 'component' ? 'React Component' : activeTab.toUpperCase()} code has been copied.`,
       });
     }).catch(err => {
       console.error('Failed to copy text: ', err);
@@ -296,9 +343,11 @@ export default function FlexboxForgePage() {
             </CardHeader>
             <CardContent>
               <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-                <TabsList className="grid w-full grid-cols-2">
+                <TabsList className="grid w-full grid-cols-4">
                   <TabsTrigger value="css">CSS</TabsTrigger>
                   <TabsTrigger value="react">React Style</TabsTrigger>
+                  <TabsTrigger value="tailwind">Tailwind</TabsTrigger>
+                  <TabsTrigger value="component">Component</TabsTrigger>
                 </TabsList>
                 <TabsContent value="css">
                   <div className="relative mt-4 h-48 w-full rounded-md bg-muted/50">
@@ -314,6 +363,20 @@ export default function FlexboxForgePage() {
                     </pre>
                   </div>
                 </TabsContent>
+                <TabsContent value="tailwind">
+                  <div className="relative mt-4 h-48 w-full rounded-md bg-muted/50">
+                    <pre className="h-full w-full overflow-auto p-4 text-sm font-mono">
+                      <code>{generatedTailwindClasses}</code>
+                    </pre>
+                  </div>
+                </TabsContent>
+                <TabsContent value="component">
+                  <div className="relative mt-4 h-48 w-full rounded-md bg-muted/50">
+                    <pre className="h-full w-full overflow-auto p-4 text-sm font-mono">
+                      <code>{generatedReactComponent}</code>
+                    </pre>
+                  </div>
+                </TabsContent>
               </Tabs>
             </CardContent>
           </Card>
@@ -321,4 +384,5 @@ export default function FlexboxForgePage() {
       </div>
     </main>
   );
-}
+
+    
