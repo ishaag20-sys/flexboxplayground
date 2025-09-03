@@ -51,7 +51,6 @@ import {
   Square,
   Package,
   PlusCircle,
-  Trash2,
   MinusCircle,
   ArrowUp,
   ArrowDown,
@@ -762,29 +761,29 @@ export default function FlexboxForgePage() {
                 <TabsTrigger value="component">Component</TabsTrigger>
               </TabsList>
               <TabsContent value="css">
-                <div className="relative mt-4 h-48 w-full rounded-md bg-muted/50">
-                  <SyntaxHighlighter language="css" style={atomDark} customStyle={{ margin: 0, padding: '1rem', backgroundColor: 'transparent' }} codeTagProps={{style: {fontFamily: 'monospace'}}}>
+                <div className="relative mt-4 h-48 w-full rounded-md bg-muted/50 overflow-auto">
+                  <SyntaxHighlighter language="css" style={atomDark} customStyle={{ margin: 0, padding: '1rem', backgroundColor: 'transparent' }} codeTagProps={{style: {fontFamily: 'monospace'}}} wrapLongLines>
                     {generatedCss}
                   </SyntaxHighlighter>
                 </div>
               </TabsContent>
               <TabsContent value="react">
-                 <div className="relative mt-4 h-48 w-full rounded-md bg-muted/50">
-                  <SyntaxHighlighter language="javascript" style={atomDark} customStyle={{ margin: 0, padding: '1rem', backgroundColor: 'transparent' }} codeTagProps={{style: {fontFamily: 'monospace'}}}>
+                 <div className="relative mt-4 h-48 w-full rounded-md bg-muted/50 overflow-auto">
+                  <SyntaxHighlighter language="javascript" style={atomDark} customStyle={{ margin: 0, padding: '1rem', backgroundColor: 'transparent' }} codeTagProps={{style: {fontFamily: 'monospace'}}} wrapLongLines>
                     {generatedReactStyle}
                   </SyntaxHighlighter>
                 </div>
               </TabsContent>
               <TabsContent value="tailwind">
-                 <div className="relative mt-4 h-48 w-full rounded-md bg-muted/50">
-                  <SyntaxHighlighter language="shell" style={atomDark} customStyle={{ margin: 0, padding: '1rem', backgroundColor: 'transparent' }} codeTagProps={{style: {fontFamily: 'monospace'}}}>
+                 <div className="relative mt-4 h-48 w-full rounded-md bg-muted/50 overflow-auto">
+                  <SyntaxHighlighter language="shell" style={atomDark} customStyle={{ margin: 0, padding: '1rem', backgroundColor: 'transparent' }} codeTagProps={{style: {fontFamily: 'monospace'}}} wrapLongLines>
                     {generatedTailwindClasses}
                   </SyntaxHighlighter>
                 </div>
               </TabsContent>
               <TabsContent value="component">
-                 <div className="relative mt-4 h-48 w-full rounded-md bg-muted/50">
-                   <SyntaxHighlighter language="jsx" style={atomDark} customStyle={{ margin: 0, padding: '1rem', backgroundColor: 'transparent' }} codeTagProps={{style: {fontFamily: 'monospace'}}}>
+                 <div className="relative mt-4 h-48 w-full rounded-md bg-muted/50 overflow-auto">
+                   <SyntaxHighlighter language="jsx" style={atomDark} customStyle={{ margin: 0, padding: '1rem', backgroundColor: 'transparent' }} codeTagProps={{style: {fontFamily: 'monospace'}}} wrapLongLines>
                     {generatedReactComponent}
                   </SyntaxHighlighter>
                 </div>
