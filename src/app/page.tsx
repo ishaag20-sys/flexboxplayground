@@ -16,6 +16,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import {
   Rows,
@@ -47,6 +48,12 @@ import {
   LayoutGrid,
   Square,
   Package,
+  PlusCircle,
+  Trash2,
+  MinusCircle,
+  ArrowUp,
+  ArrowDown,
+  RefreshCw,
 } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
@@ -317,6 +324,10 @@ export default function FlexboxForgePage() {
   const jcOptions = isRow ? justifyContentOptions.row : justifyContentOptions.column;
   const aiOptions = isRow ? alignItemsOptions.row : alignItemsOptions.column;
 
+  const selectedItemProps = useMemo(() => {
+    return items.find(item => item.id === selectedItem);
+  }, [items, selectedItem]);
+
   const applyTemplate = (template: Template) => {
     const { settings } = template;
     setFlexDirection(settings.flexDirection ?? 'row');
@@ -342,6 +353,27 @@ export default function FlexboxForgePage() {
         setAlignItems('center');
     }
   }, [flexDirection, jcOptions, aiOptions, justifyContent, alignItems]);
+
+  const addItem = () => {
+    const newItem: ItemProps = {
+      id: (items.length > 0 ? Math.max(...items.map(i => i.id)) : 0) + 1,
+      grow: 0,
+      shrink: 1,
+      basis: 'auto',
+    };
+    setItems([...items, newItem]);
+  };
+
+  const removeItem = (id: number) => {
+    setItems(items.filter(item => item.id !== id));
+    if (selectedItem === id) {
+      setSelectedItem(null);
+    }
+  };
+
+  const updateItem = (id: number, newProps: Partial<Omit<ItemProps, 'id'>>) => {
+    setItems(items.map(item => item.id === id ? { ...item, ...newProps } : item));
+  };
 
   const generatedCss = useMemo(() => {
     const containerCss = `.container {\n  display: flex;\n  flex-direction: ${flexDirection};\n  justify-content: ${justifyContent};\n  align-items: ${alignItems};\n  flex-wrap: ${flexWrap};\n  align-content: ${alignContent};\n  gap: ${gap}px;\n}`;
@@ -416,7 +448,9 @@ export default function FlexboxForgePage() {
         ? generatedReactStyle
         : activeTab === 'tailwind'
         ? generatedTailwindClasses
-        : generatedReactComponent;
+        : activeTab === 'component'
+        ? generatedReactComponent
+        : '';
 
     navigator.clipboard.writeText(textToCopy).then(() => {
       toast({
@@ -456,6 +490,7 @@ export default function FlexboxForgePage() {
         minWidth: item.minWidth || 64,
         minHeight: item.minHeight || 64,
         padding: '1rem',
+        cursor: 'pointer',
         ...(selectedItem === item.id && {boxShadow: '0 0 0 2px hsl(var(--ring))'})
     };
 
@@ -479,6 +514,7 @@ export default function FlexboxForgePage() {
             transition={{ type: 'spring', stiffness: 300, damping: 25 }}
             className="flex items-center justify-center rounded-md bg-primary text-primary-foreground font-bold shadow"
             style={itemStyle}
+            onClick={() => setSelectedItem(item.id)}
         >
             {index + 1}
         </motion.div>
@@ -496,8 +532,9 @@ export default function FlexboxForgePage() {
             </div>
             <div className="space-y-6">
               <Tabs defaultValue="container">
-                <TabsList className="grid w-full grid-cols-2">
+                <TabsList className="grid w-full grid-cols-3">
                   <TabsTrigger value="container">Container</TabsTrigger>
+                  <TabsTrigger value="item">Item</TabsTrigger>
                   <TabsTrigger value="templates">Templates</TabsTrigger>
                 </TabsList>
                 <TabsContent value="container" className="space-y-6 pt-6">
@@ -573,13 +610,51 @@ export default function FlexboxForgePage() {
                       <Slider value={[gap]} onValueChange={(v) => setGap(v[0])} max={100} step={4} />
                     </div>
                   </div>
-                  <div className="space-y-2">
-                    <Label>Items</Label>
-                     <div className="flex items-center gap-2">
-                        <Package className="h-4 w-4 text-muted-foreground" />
-                        <span className="text-sm text-muted-foreground">{items.length} item(s)</span>
+                </TabsContent>
+                <TabsContent value="item" className="space-y-4 pt-6">
+                    <div className="space-y-2">
+                        <Label>Manage Items</Label>
+                        <div className="flex items-center gap-2">
+                            <Package className="h-4 w-4 text-muted-foreground" />
+                            <span className="text-sm text-muted-foreground">{items.length} item(s)</span>
+                            <Button variant="ghost" size="icon" className="h-6 w-6 ml-auto" onClick={addItem}><PlusCircle className="h-4 w-4" /></Button>
+                            <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => items.length > 1 && selectedItem && removeItem(selectedItem)} disabled={items.length <= 1 || !selectedItem}><MinusCircle className="h-4 w-4" /></Button>
+                        </div>
                     </div>
-                  </div>
+                    {selectedItemProps ? (
+                    <div className="space-y-4 pt-4 border-t">
+                        <div className='flex items-center justify-between'>
+                            <Label>Selected Item: {items.findIndex(i => i.id === selectedItem) + 1}</Label>
+                             <Button variant="outline" size="sm" onClick={() => setSelectedItem(null)}>Deselect</Button>
+                        </div>
+                       
+                        <div className="space-y-2">
+                            <Label>Flex Grow</Label>
+                            <div className="flex items-center gap-4">
+                                <ArrowUp className="h-5 w-5 text-muted-foreground"/>
+                                <Slider value={[selectedItemProps.grow]} onValueChange={v => updateItem(selectedItem, { grow: v[0] })} max={5} step={1} />
+                            </div>
+                        </div>
+                        <div className="space-y-2">
+                            <Label>Flex Shrink</Label>
+                             <div className="flex items-center gap-4">
+                                <ArrowDown className="h-5 w-5 text-muted-foreground"/>
+                                <Slider value={[selectedItemProps.shrink]} onValueChange={v => updateItem(selectedItem, { shrink: v[0] })} max={5} step={1} />
+                            </div>
+                        </div>
+                        <div className="space-y-2">
+                            <Label>Flex Basis</Label>
+                            <div className="flex items-center gap-4">
+                                <RefreshCw className="h-5 w-5 text-muted-foreground"/>
+                                <Input value={selectedItemProps.basis} onChange={e => updateItem(selectedItem, { basis: e.target.value })} placeholder="e.g. 100px, 50%, auto" />
+                            </div>
+                        </div>
+                    </div>
+                    ) : (
+                        <div className="text-center text-sm text-muted-foreground pt-4 border-t">
+                            <p>Click an item in the preview to select and edit it.</p>
+                        </div>
+                    )}
                 </TabsContent>
                 <TabsContent value="templates" className="space-y-4 pt-6">
                   {templates.map(template => (
@@ -665,3 +740,5 @@ export default function FlexboxForgePage() {
     </main>
   );
 }
+
+    
