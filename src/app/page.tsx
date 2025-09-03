@@ -39,17 +39,15 @@ import {
   AlignVerticalJustifyEnd,
   AlignVerticalSpaceBetween,
   AlignVerticalSpaceAround,
-  Plus,
-  Minus,
   Clipboard,
   MoveHorizontal,
   WrapText,
   PanelTop,
   ChevronsLeftRight,
-  ArrowRightLeft,
-  ArrowDownUp
+  LayoutGrid,
+  Square,
+  Package,
 } from 'lucide-react';
-import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
 type ItemProps = {
@@ -57,6 +55,8 @@ type ItemProps = {
   grow: number;
   shrink: number;
   basis: string;
+  minHeight?: string;
+  minWidth?: string;
 };
 
 type FlexboxProps = {
@@ -67,6 +67,138 @@ type FlexboxProps = {
     alignContent: 'flex-start' | 'center' | 'flex-end' | 'space-between' | 'space-around' | 'stretch';
     gap: number;
 }
+
+type Template = {
+    name: string;
+    description: string;
+    icon: React.ElementType;
+    settings: Partial<FlexboxProps> & { items: Omit<ItemProps, 'id'>[] };
+};
+
+const templates: Template[] = [
+    {
+      name: 'Centering',
+      description: 'A single item centered vertically and horizontally.',
+      icon: Square,
+      settings: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+        items: [{ grow: 0, shrink: 0, basis: 'auto' }],
+      },
+    },
+    {
+        name: 'Split-screen',
+        description: 'Two equal-width columns that fill the container height.',
+        icon: LayoutGrid,
+        settings: {
+            flexDirection: 'row',
+            alignItems: 'stretch',
+            items: [
+                { grow: 1, shrink: 1, basis: '0%' },
+                { grow: 1, shrink: 1, basis: '0%' },
+            ],
+        },
+    },
+    {
+        name: 'Sidebar',
+        description: 'A fixed-width sidebar next to a flexible main content area.',
+        icon: LayoutGrid,
+        settings: {
+            flexDirection: 'row',
+            alignItems: 'stretch',
+            items: [
+                { grow: 0, shrink: 0, basis: '250px' },
+                { grow: 1, shrink: 1, basis: 'auto' },
+            ],
+        },
+    },
+    {
+        name: 'Equal-height Modules',
+        description: 'Three modules that share the row and maintain equal height.',
+        icon: LayoutGrid,
+        settings: {
+            flexDirection: 'row',
+            alignItems: 'stretch',
+            gap: 16,
+            items: [
+                { grow: 1, shrink: 1, basis: '0' },
+                { grow: 1, shrink: 1, basis: '0' },
+                { grow: 1, shrink: 1, basis: '0' },
+            ],
+        },
+    },
+    {
+        name: 'Sticky Footer',
+        description: 'Content with a footer that sticks to the bottom.',
+        icon: LayoutGrid,
+        settings: {
+            flexDirection: 'column',
+            items: [
+                { grow: 1, shrink: 0, basis: 'auto' },
+                { grow: 0, shrink: 0, basis: '100px' },
+            ],
+        },
+    },
+    {
+        name: 'Hero Cover',
+        description: 'A full-screen hero section.',
+        icon: Square,
+        settings: {
+            flexDirection: 'column',
+            justifyContent: 'center',
+            alignItems: 'center',
+            items: [{ grow: 1, shrink: 0, basis: 'auto' }],
+        },
+    },
+    {
+        name: 'Collection Grid',
+        description: 'A responsive grid of items that wrap.',
+        icon: LayoutGrid,
+        settings: {
+            flexDirection: 'row',
+            flexWrap: 'wrap',
+            gap: 16,
+            items: [
+                { grow: 1, shrink: 1, basis: '150px' },
+                { grow: 1, shrink: 1, basis: '150px' },
+                { grow: 1, shrink: 1, basis: '150px' },
+                { grow: 1, shrink: 1, basis: '150px' },
+                { grow: 1, shrink: 1, basis: '150px' },
+                { grow: 1, shrink: 1, basis: '150px' },
+            ],
+        },
+    },
+    {
+        name: 'Holy Grail',
+        description: 'A header, footer, and three-column body.',
+        icon: LayoutGrid,
+        settings: {
+            flexDirection: 'column',
+            items: [
+                { grow: 0, shrink: 0, basis: '100px' },
+                // This will be the container for the 3 columns
+                { grow: 1, shrink: 0, basis: 'auto' }, 
+                { grow: 0, shrink: 0, basis: '100px' },
+            ],
+        },
+    },
+    {
+        name: 'Pricing Table',
+        description: 'Three columns for a pricing table layout.',
+        icon: LayoutGrid,
+        settings: {
+            flexDirection: 'row',
+            alignItems: 'stretch',
+            gap: 16,
+            items: [
+                { grow: 1, shrink: 1, basis: '0' },
+                { grow: 1, shrink: 1, basis: '0' },
+                { grow: 1, shrink: 1, basis: '0' },
+            ],
+        },
+    },
+];
 
 const flexDirectionOptions: { value: FlexboxProps['flexDirection']; label: string; icon: React.ElementType }[] = [
   { value: 'row', label: 'Row', icon: Rows },
@@ -165,11 +297,8 @@ const tailwindAlignContentMap: Record<FlexboxProps['alignContent'], string> = {
     stretch: 'content-stretch',
 };
 
-const createInitialItems = (): ItemProps[] => [
-    { id: 1, grow: 0, shrink: 1, basis: 'auto' },
-    { id: 2, grow: 0, shrink: 1, basis: 'auto' },
-    { id: 3, grow: 0, shrink: 1, basis: 'auto' },
-];
+const createInitialItems = (): ItemProps[] =>
+  templates[0].settings.items.map((item, index) => ({ ...item, id: index + 1 }));
 
 export default function FlexboxForgePage() {
   const { toast } = useToast();
@@ -187,6 +316,23 @@ export default function FlexboxForgePage() {
   const isRow = flexDirection.includes('row');
   const jcOptions = isRow ? justifyContentOptions.row : justifyContentOptions.column;
   const aiOptions = isRow ? alignItemsOptions.row : alignItemsOptions.column;
+
+  const applyTemplate = (template: Template) => {
+    const { settings } = template;
+    setFlexDirection(settings.flexDirection ?? 'row');
+    setJustifyContent(settings.justifyContent ?? 'flex-start');
+    setAlignItems(settings.alignItems ?? 'stretch');
+    setFlexWrap(settings.flexWrap ?? 'nowrap');
+    setAlignContent(settings.alignContent ?? 'stretch');
+    setGap(settings.gap ?? 0);
+    setItems(settings.items.map((item, index) => ({ ...item, id: index + 1 })));
+    setSelectedItem(null);
+  };
+
+  useEffect(() => {
+    applyTemplate(templates[0]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     if (!jcOptions.find(o => o.value === justifyContent)) {
@@ -239,13 +385,19 @@ export default function FlexboxForgePage() {
       tailwindAlignItemsMap[alignItems],
       tailwindFlexWrapMap[flexWrap],
       tailwindAlignContentMap[alignContent],
-      `gap-[${gap}px]`,
     ];
+    if (gap > 0) {
+        classes.push(`gap-${gap/4}`);
+    }
     return classes.join(' ');
   }, [flexDirection, justifyContent, alignItems, flexWrap, alignContent, gap]);
 
   const generatedTailwindItemClasses = (item: ItemProps) => {
-    return `grow-[${item.grow}] shrink-[${item.shrink}] basis-[${item.basis}]`;
+    const classes = [];
+    if (item.grow > 0) classes.push(`grow-[${item.grow}]`);
+    if (item.shrink > 0) classes.push(`shrink-[${item.shrink}]`);
+    if (item.basis !== 'auto') classes.push(`basis-[${item.basis}]`);
+    return classes.join(' ');
   };
 
   const generatedTailwindClasses = useMemo(() => {
@@ -253,7 +405,7 @@ export default function FlexboxForgePage() {
   }, [generatedTailwindContainerClasses, items]);
 
   const generatedReactComponent = useMemo(() => {
-    return `<div className="${generatedTailwindContainerClasses}">\n  ${items.map((item, i) => `<div className="${generatedTailwindItemClasses(item)}">Item ${i + 1}</div>`).join('\n  ')}\n</div>`;
+    return `<div className="${generatedTailwindContainerClasses}">\n  ${items.map((item, i) => `<div className="${generatedTailwindItemClasses(item)} bg-primary text-primary-foreground p-4 rounded-md">Item ${i + 1}</div>`).join('\n  ')}\n</div>`;
   }, [generatedTailwindContainerClasses, items]);
 
   const handleCopy = () => {
@@ -281,26 +433,6 @@ export default function FlexboxForgePage() {
     });
   };
 
-  const addItem = () => setItems(prev => [...prev, { id: (prev.length ? Math.max(...prev.map(i => i.id)) : 0) + 1, grow: 0, shrink: 1, basis: 'auto' }]);
-  const removeItem = (id: number) => {
-    if (items.length > 1) {
-      setItems(prev => prev.filter(item => item.id !== id));
-      if (selectedItem === id) {
-        setSelectedItem(null);
-      }
-    } else {
-        toast({
-            title: "Cannot remove last item",
-            description: "The preview must contain at least one item.",
-            variant: "destructive"
-        })
-    }
-  };
-
-  const updateItem = (id: number, props: Partial<ItemProps>) => {
-    setItems(items => items.map(item => item.id === id ? { ...item, ...props } : item));
-  }
-
   const flexStyle: CSSProperties = {
     display: 'flex',
     flexDirection,
@@ -314,7 +446,44 @@ export default function FlexboxForgePage() {
     minHeight: flexWrap === 'wrap' ? '300px' : (alignItems === 'stretch' ? '300px' : 'auto'),
   };
 
-  const currentItem = items.find(item => item.id === selectedItem);
+  const renderItem = (item: ItemProps, index: number) => {
+    const isHolyGrailMiddle = item.id === 2 && items.length === 3 && flexDirection === 'column';
+    
+    const itemStyle: CSSProperties = {
+        flexGrow: item.grow,
+        flexShrink: item.shrink,
+        flexBasis: item.basis,
+        minWidth: item.minWidth || 64,
+        minHeight: item.minHeight || 64,
+        padding: '1rem',
+        ...(selectedItem === item.id && {boxShadow: '0 0 0 2px hsl(var(--ring))'})
+    };
+
+    if (isHolyGrailMiddle) {
+        return (
+            <div key={item.id} style={itemStyle} className="flex gap-4 w-full">
+                <div className="flex-none bg-primary/80 rounded-md p-4 w-1/5">Sidebar</div>
+                <div className="grow bg-primary rounded-md p-4">Main Content</div>
+                <div className="flex-none bg-primary/80 rounded-md p-4 w-1/5">Sidebar</div>
+            </div>
+        )
+    }
+
+    return (
+        <motion.div
+            key={item.id}
+            layout
+            initial={{ opacity: 0, scale: 0.5 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.5 }}
+            transition={{ type: 'spring', stiffness: 300, damping: 25 }}
+            className="flex items-center justify-center rounded-md bg-primary text-primary-foreground font-bold shadow"
+            style={itemStyle}
+        >
+            {index + 1}
+        </motion.div>
+    );
+  }
 
   return (
     <main className="flex h-screen bg-background">
@@ -329,7 +498,7 @@ export default function FlexboxForgePage() {
               <Tabs defaultValue="container">
                 <TabsList className="grid w-full grid-cols-2">
                   <TabsTrigger value="container">Container</TabsTrigger>
-                  <TabsTrigger value="items" disabled={!selectedItem}>Items</TabsTrigger>
+                  <TabsTrigger value="templates">Templates</TabsTrigger>
                 </TabsList>
                 <TabsContent value="container" className="space-y-6 pt-6">
                   <div className="space-y-2">
@@ -401,44 +570,29 @@ export default function FlexboxForgePage() {
                     <Label>Gap: {gap}px</Label>
                     <div className="flex items-center gap-4">
                       <MoveHorizontal className="h-5 w-5 text-muted-foreground"/>
-                      <Slider value={[gap]} onValueChange={(v) => setGap(v[0])} max={100} step={1} />
+                      <Slider value={[gap]} onValueChange={(v) => setGap(v[0])} max={100} step={4} />
                     </div>
                   </div>
                   <div className="space-y-2">
                     <Label>Items</Label>
-                    <div className="flex items-center gap-2">
-                      <Button onClick={addItem} size="icon" variant="outline"><Plus className="h-4 w-4" /></Button>
-                      <span className="text-sm text-muted-foreground ml-2">{items.length} item(s)</span>
+                     <div className="flex items-center gap-2">
+                        <Package className="h-4 w-4 text-muted-foreground" />
+                        <span className="text-sm text-muted-foreground">{items.length} item(s)</span>
                     </div>
                   </div>
                 </TabsContent>
-                <TabsContent value="items" className="space-y-6 pt-6">
-                  {currentItem ? (
-                      <>
-                      <div className='flex items-center justify-between'>
-                          <CardTitle>Item {items.findIndex(it => it.id === currentItem.id) + 1}</CardTitle>
-                          <Button onClick={() => removeItem(currentItem.id)} size="icon" variant="destructive" disabled={items.length <= 1}><Minus className="h-4 w-4" /></Button>
-                      </div>
-                      <div className="space-y-2">
-                          <Label>Flex Grow: {currentItem.grow}</Label>
-                          <div className="flex items-center gap-4">
-                              <ArrowRightLeft className="h-5 w-5 text-muted-foreground"/>
-                              <Slider value={[currentItem.grow]} onValueChange={(v) => updateItem(currentItem.id, { grow: v[0] })} max={5} step={1} />
-                          </div>
-                      </div>
-                      <div className="space-y-2">
-                          <Label>Flex Shrink: {currentItem.shrink}</Label>
-                          <div className="flex items-center gap-4">
-                              <ArrowDownUp className="h-5 w-5 text-muted-foreground"/>
-                              <Slider value={[currentItem.shrink]} onValueChange={(v) => updateItem(currentItem.id, { shrink: v[0] })} max={5} step={1} />
-                          </div>
-                      </div>
-                      <div className="space-y-2">
-                          <Label>Flex Basis</Label>
-                           <Input value={currentItem.basis} onChange={(e) => updateItem(currentItem.id, { basis: e.target.value })} placeholder="e.g., auto, 100px, 50%"/>
-                      </div>
-                      </>
-                  ) : <div className="text-center text-muted-foreground py-12">Select an item in the preview to edit its properties.</div>}
+                <TabsContent value="templates" className="space-y-4 pt-6">
+                  {templates.map(template => (
+                    <Card key={template.name} className="cursor-pointer hover:bg-muted/50 transition-colors" onClick={() => applyTemplate(template)}>
+                        <CardHeader className='flex-row items-center gap-4 space-y-0'>
+                            <template.icon className="h-6 w-6 text-primary" />
+                            <div>
+                                <CardTitle className='text-base'>{template.name}</CardTitle>
+                                <CardDescription className='text-xs mt-1'>{template.description}</CardDescription>
+                            </div>
+                        </CardHeader>
+                    </Card>
+                  ))}
                 </TabsContent>
               </Tabs>
             </div>
@@ -454,34 +608,7 @@ export default function FlexboxForgePage() {
           <CardContent className="flex-grow flex items-center justify-center">
             <motion.div layout style={flexStyle} className="rounded-lg border-2 border-dashed p-4 w-full h-full bg-background">
               <AnimatePresence>
-                {items.map((item, index) => (
-                  <motion.div
-                    key={item.id}
-                    layout
-                    initial={{ opacity: 0, scale: 0.5 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.5 }}
-                    transition={{ type: 'spring', stiffness: 300, damping: 25 }}
-                    className="flex items-center justify-center rounded-md bg-primary text-primary-foreground font-bold shadow cursor-pointer"
-                    onClick={() => setSelectedItem(item.id)}
-                    data-selected={selectedItem === item.id}
-                    style={{
-                      flexGrow: item.grow,
-                      flexShrink: item.shrink,
-                      flexBasis: item.basis,
-                      width: isRow ? 'auto' : 'auto',
-                      height: !isRow ? 'auto' : 'auto',
-                      minWidth: 64,
-                      minHeight: 64,
-                      padding: '1rem',
-                      ...(alignItems === 'stretch' && (isRow ? {} : {width: 'auto'})),
-                      ...(alignItems === 'stretch' && (!isRow ? {} : {height: 'auto'})),
-                      ...(selectedItem === item.id && {boxShadow: '0 0 0 2px hsl(var(--ring))'})
-                    }}
-                  >
-                    {index + 1}
-                  </motion.div>
-                ))}
+                {items.map((item, index) => renderItem(item, index))}
               </AnimatePresence>
             </motion.div>
           </CardContent>
