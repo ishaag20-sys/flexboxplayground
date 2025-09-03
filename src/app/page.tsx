@@ -733,7 +733,7 @@ export default function FlexboxForgePage() {
             <h1 className="text-2xl font-bold tracking-tight">Flex Playground</h1>
             <p className="text-muted-foreground mt-1 text-sm">Visually craft and generate CSS for modern layouts.</p>
           </div>
-          <a href="#" target="_blank" rel="noopener noreferrer">
+          <a href="https://github.com/ishaag20-sys/flexboxplayground" target="_blank" rel="noopener noreferrer">
             <Button variant="outline" size="icon">
               <Github className="h-5 w-5" />
             </Button>
