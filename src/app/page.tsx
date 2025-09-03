@@ -346,13 +346,16 @@ export default function FlexboxForgePage() {
   }, []);
 
   useEffect(() => {
+    // When changing direction, if the current justify-content is not valid for the new direction, reset it.
     if (!jcOptions.find(o => o.value === justifyContent)) {
-        setJustifyContent('center');
+        setJustifyContent(isRow ? 'flex-start' : 'flex-start');
     }
+    // When changing direction, if the current align-items is not valid for the new direction, reset it.
     if (!aiOptions.find(o => o.value === alignItems)) {
-        setAlignItems('center');
+        setAlignItems(isRow ? 'stretch' : 'stretch');
     }
-  }, [flexDirection, jcOptions, aiOptions, justifyContent, alignItems]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [flexDirection]);
 
   const addItem = () => {
     const newItem: ItemProps = {
@@ -434,11 +437,11 @@ export default function FlexboxForgePage() {
 
   const generatedTailwindClasses = useMemo(() => {
       return `Container classes: "${generatedTailwindContainerClasses}"\n\n` + items.map((item, i) => `Item ${i+1} classes: "${generatedTailwindItemClasses(item)}"`).join('\n');
-  }, [generatedTailwindContainerClasses, items]);
+  }, [generatedTailwindContainerClasses, items, generatedTailwindItemClasses]);
 
   const generatedReactComponent = useMemo(() => {
     return `<div className="${generatedTailwindContainerClasses}">\n  ${items.map((item, i) => `<div className="${generatedTailwindItemClasses(item)} bg-primary text-primary-foreground p-4 rounded-md">Item ${i + 1}</div>`).join('\n  ')}\n</div>`;
-  }, [generatedTailwindContainerClasses, items]);
+  }, [generatedTailwindContainerClasses, items, generatedTailwindItemClasses]);
 
   const handleCopy = () => {
     const textToCopy =
@@ -481,7 +484,7 @@ export default function FlexboxForgePage() {
   };
 
   const renderItem = (item: ItemProps, index: number) => {
-    const isHolyGrailMiddle = item.id === 2 && items.length === 3 && flexDirection === 'column';
+    const isHolyGrailMiddle = item.id === 2 && items.length === 3 && flexDirection === 'column' && templates.find(t => t.name === 'Holy Grail')?.settings.flexDirection === 'column';
     
     const itemStyle: CSSProperties = {
         flexGrow: item.grow,
@@ -746,5 +749,3 @@ export default function FlexboxForgePage() {
     </main>
   );
 }
-
-    
