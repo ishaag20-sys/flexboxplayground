@@ -54,6 +54,7 @@ import {
   ArrowUp,
   ArrowDown,
   RefreshCw,
+  ListOrdered,
 } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
@@ -62,6 +63,8 @@ type ItemProps = {
   grow: number;
   shrink: number;
   basis: string;
+  order: number;
+  alignSelf: 'auto' | 'flex-start' | 'center' | 'flex-end' | 'stretch' | 'baseline';
   minHeight?: string;
   minWidth?: string;
 };
@@ -91,7 +94,7 @@ const templates: Template[] = [
         flexDirection: 'row',
         justifyContent: 'center',
         alignItems: 'center',
-        items: [{ grow: 0, shrink: 0, basis: 'auto' }],
+        items: [{ grow: 0, shrink: 0, basis: 'auto', order: 0, alignSelf: 'auto' }],
       },
     },
     {
@@ -102,8 +105,8 @@ const templates: Template[] = [
             flexDirection: 'row',
             alignItems: 'stretch',
             items: [
-                { grow: 1, shrink: 1, basis: '0%' },
-                { grow: 1, shrink: 1, basis: '0%' },
+                { grow: 1, shrink: 1, basis: '0%', order: 0, alignSelf: 'auto' },
+                { grow: 1, shrink: 1, basis: '0%', order: 0, alignSelf: 'auto' },
             ],
         },
     },
@@ -115,8 +118,8 @@ const templates: Template[] = [
             flexDirection: 'row',
             alignItems: 'stretch',
             items: [
-                { grow: 0, shrink: 0, basis: '250px' },
-                { grow: 1, shrink: 1, basis: 'auto' },
+                { grow: 0, shrink: 0, basis: '250px', order: 0, alignSelf: 'auto' },
+                { grow: 1, shrink: 1, basis: 'auto', order: 0, alignSelf: 'auto' },
             ],
         },
     },
@@ -129,9 +132,9 @@ const templates: Template[] = [
             alignItems: 'stretch',
             gap: 16,
             items: [
-                { grow: 1, shrink: 1, basis: '0' },
-                { grow: 1, shrink: 1, basis: '0' },
-                { grow: 1, shrink: 1, basis: '0' },
+                { grow: 1, shrink: 1, basis: '0', order: 0, alignSelf: 'auto' },
+                { grow: 1, shrink: 1, basis: '0', order: 0, alignSelf: 'auto' },
+                { grow: 1, shrink: 1, basis: '0', order: 0, alignSelf: 'auto' },
             ],
         },
     },
@@ -142,8 +145,8 @@ const templates: Template[] = [
         settings: {
             flexDirection: 'column',
             items: [
-                { grow: 1, shrink: 0, basis: 'auto' },
-                { grow: 0, shrink: 0, basis: '100px' },
+                { grow: 1, shrink: 0, basis: 'auto', order: 0, alignSelf: 'auto' },
+                { grow: 0, shrink: 0, basis: '100px', order: 0, alignSelf: 'auto' },
             ],
         },
     },
@@ -155,7 +158,7 @@ const templates: Template[] = [
             flexDirection: 'column',
             justifyContent: 'center',
             alignItems: 'center',
-            items: [{ grow: 1, shrink: 0, basis: 'auto' }],
+            items: [{ grow: 1, shrink: 0, basis: 'auto', order: 0, alignSelf: 'auto' }],
         },
     },
     {
@@ -167,12 +170,12 @@ const templates: Template[] = [
             flexWrap: 'wrap',
             gap: 16,
             items: [
-                { grow: 1, shrink: 1, basis: '150px' },
-                { grow: 1, shrink: 1, basis: '150px' },
-                { grow: 1, shrink: 1, basis: '150px' },
-                { grow: 1, shrink: 1, basis: '150px' },
-                { grow: 1, shrink: 1, basis: '150px' },
-                { grow: 1, shrink: 1, basis: '150px' },
+                { grow: 1, shrink: 1, basis: '150px', order: 0, alignSelf: 'auto' },
+                { grow: 1, shrink: 1, basis: '150px', order: 0, alignSelf: 'auto' },
+                { grow: 1, shrink: 1, basis: '150px', order: 0, alignSelf: 'auto' },
+                { grow: 1, shrink: 1, basis: '150px', order: 0, alignSelf: 'auto' },
+                { grow: 1, shrink: 1, basis: '150px', order: 0, alignSelf: 'auto' },
+                { grow: 1, shrink: 1, basis: '150px', order: 0, alignSelf: 'auto' },
             ],
         },
     },
@@ -183,10 +186,10 @@ const templates: Template[] = [
         settings: {
             flexDirection: 'column',
             items: [
-                { grow: 0, shrink: 0, basis: '100px' },
+                { grow: 0, shrink: 0, basis: '100px', order: 0, alignSelf: 'auto' },
                 // This will be the container for the 3 columns
-                { grow: 1, shrink: 0, basis: 'auto' }, 
-                { grow: 0, shrink: 0, basis: '100px' },
+                { grow: 1, shrink: 0, basis: 'auto', order: 0, alignSelf: 'auto' }, 
+                { grow: 0, shrink: 0, basis: '100px', order: 0, alignSelf: 'auto' },
             ],
         },
     },
@@ -199,9 +202,9 @@ const templates: Template[] = [
             alignItems: 'stretch',
             gap: 16,
             items: [
-                { grow: 1, shrink: 1, basis: '0' },
-                { grow: 1, shrink: 1, basis: '0' },
-                { grow: 1, shrink: 1, basis: '0' },
+                { grow: 1, shrink: 1, basis: '0', order: 0, alignSelf: 'auto' },
+                { grow: 1, shrink: 1, basis: '0', order: 0, alignSelf: 'auto' },
+                { grow: 1, shrink: 1, basis: '0', order: 0, alignSelf: 'auto' },
             ],
         },
     },
@@ -250,6 +253,11 @@ const alignItemsOptions = {
     ]
 };
 
+const alignSelfOptions: { value: ItemProps['alignSelf']; label: string; icon: React.ElementType }[] = [
+    { value: 'auto', label: 'Auto', icon: StretchVertical },
+    ...alignItemsOptions.row,
+];
+
 const flexWrapOptions: { value: FlexboxProps['flexWrap']; label: string; icon: React.ElementType }[] = [
     { value: 'nowrap', label: 'No Wrap', icon: ChevronsLeftRight },
     { value: 'wrap', label: 'Wrap', icon: WrapText },
@@ -287,6 +295,15 @@ const tailwindAlignItemsMap: Record<FlexboxProps['alignItems'], string> = {
     center: 'items-center',
     'flex-end': 'items-end',
     baseline: 'items-baseline',
+};
+
+const tailwindAlignSelfMap: Record<ItemProps['alignSelf'], string> = {
+    auto: 'self-auto',
+    stretch: 'self-stretch',
+    'flex-start': 'self-start',
+    center: 'self-center',
+    'flex-end': 'self-end',
+    baseline: 'self-baseline',
 };
 
 const tailwindFlexWrapMap: Record<FlexboxProps['flexWrap'], string> = {
@@ -363,6 +380,8 @@ export default function FlexboxForgePage() {
       grow: 0,
       shrink: 1,
       basis: 'auto',
+      order: 0,
+      alignSelf: 'auto',
     };
     setItems([...items, newItem]);
   };
@@ -380,7 +399,7 @@ export default function FlexboxForgePage() {
 
   const generatedCss = useMemo(() => {
     const containerCss = `.container {\n  display: flex;\n  flex-direction: ${flexDirection};\n  justify-content: ${justifyContent};\n  align-items: ${alignItems};\n  flex-wrap: ${flexWrap};\n  align-content: ${alignContent};\n  gap: ${gap}px;\n}`;
-    const itemsCss = items.map((item, i) => `.item-${i + 1} {\n  flex-grow: ${item.grow};\n  flex-shrink: ${item.shrink};\n  flex-basis: ${item.basis};\n}`).join('\n\n');
+    const itemsCss = items.map((item, i) => `.item-${i + 1} {\n  flex-grow: ${item.grow};\n  flex-shrink: ${item.shrink};\n  flex-basis: ${item.basis};\n  order: ${item.order};\n  align-self: ${item.alignSelf};\n}`).join('\n\n');
     return `${containerCss}\n\n${itemsCss}`;
   }, [flexDirection, justifyContent, alignItems, flexWrap, alignContent, gap, items]);
 
@@ -402,7 +421,9 @@ export default function FlexboxForgePage() {
         const itemStyle: CSSProperties = {
             flexGrow: item.grow,
             flexShrink: item.shrink,
-            flexBasis: item.basis
+            flexBasis: item.basis,
+            order: item.order,
+            alignSelf: item.alignSelf,
         };
         return `const item${i+1}Style = {\n${Object.entries(itemStyle)
             .map(([key, value]) => `  ${key}: '${value}',`)
@@ -432,16 +453,18 @@ export default function FlexboxForgePage() {
     if (item.grow > 0) classes.push(`grow-[${item.grow}]`);
     if (item.shrink > 0) classes.push(`shrink-[${item.shrink}]`);
     if (item.basis !== 'auto') classes.push(`basis-[${item.basis}]`);
+    if (item.order !== 0) classes.push(`order-${item.order}`);
+    if (item.alignSelf !== 'auto') classes.push(tailwindAlignSelfMap[item.alignSelf]);
     return classes.join(' ');
   };
 
   const generatedTailwindClasses = useMemo(() => {
       return `Container classes: "${generatedTailwindContainerClasses}"\n\n` + items.map((item, i) => `Item ${i+1} classes: "${generatedTailwindItemClasses(item)}"`).join('\n');
-  }, [generatedTailwindContainerClasses, items, generatedTailwindItemClasses]);
+  }, [generatedTailwindContainerClasses, items]);
 
   const generatedReactComponent = useMemo(() => {
     return `<div className="${generatedTailwindContainerClasses}">\n  ${items.map((item, i) => `<div className="${generatedTailwindItemClasses(item)} bg-primary text-primary-foreground p-4 rounded-md">Item ${i + 1}</div>`).join('\n  ')}\n</div>`;
-  }, [generatedTailwindContainerClasses, items, generatedTailwindItemClasses]);
+  }, [generatedTailwindContainerClasses, items]);
 
   const handleCopy = () => {
     const textToCopy =
@@ -490,6 +513,8 @@ export default function FlexboxForgePage() {
         flexGrow: item.grow,
         flexShrink: item.shrink,
         flexBasis: item.basis,
+        order: item.order,
+        alignSelf: item.alignSelf,
         minWidth: item.minWidth || 64,
         minHeight: item.minHeight || 64,
         padding: '1rem',
@@ -652,6 +677,26 @@ export default function FlexboxForgePage() {
                                 <Input value={selectedItemProps.basis} onChange={e => updateItem(selectedItem, { basis: e.target.value })} placeholder="e.g. 100px, 50%, auto" />
                             </div>
                         </div>
+                        <div className="space-y-2">
+                            <Label>Order</Label>
+                            <div className="flex items-center gap-4">
+                                <ListOrdered className="h-5 w-5 text-muted-foreground"/>
+                                <Input type="number" value={selectedItemProps.order} onChange={e => updateItem(selectedItem, { order: parseInt(e.target.value, 10) || 0 })} />
+                            </div>
+                        </div>
+                        <div className="space-y-2">
+                            <Label>Align Self</Label>
+                            <Select value={selectedItemProps.alignSelf} onValueChange={(v) => updateItem(selectedItem, { alignSelf: v as any })}>
+                                <SelectTrigger><SelectValue placeholder="Select self alignment" /></SelectTrigger>
+                                <SelectContent>
+                                {alignSelfOptions.map(o => (
+                                    <SelectItem key={o.value} value={o.value}>
+                                    <div className="flex items-center gap-2"><o.icon className="h-4 w-4" /> {o.label}</div>
+                                    </SelectItem>
+                                ))}
+                                </SelectContent>
+                            </Select>
+                        </div>
                     </div>
                     ) : (
                         <div className="text-center text-sm text-muted-foreground pt-4 border-t">
@@ -749,3 +794,5 @@ export default function FlexboxForgePage() {
     </main>
   );
 }
+
+    
