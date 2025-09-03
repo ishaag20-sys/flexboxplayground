@@ -17,7 +17,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { generateCssCode, type GenerateCssCodeInput } from '@/ai/flows/generate-css-code';
 import {
   Rows,
   Columns,
@@ -43,11 +42,17 @@ import {
   Plus,
   Minus,
   Clipboard,
-  Loader2,
   MoveHorizontal
 } from 'lucide-react';
 
-const flexDirectionOptions: { value: GenerateCssCodeInput['flexDirection']; label: string; icon: React.ElementType }[] = [
+type FlexboxProps = {
+    flexDirection: 'row' | 'column' | 'row-reverse' | 'column-reverse';
+    justifyContent: 'flex-start' | 'center' | 'flex-end' | 'space-between' | 'space-around' | 'space-evenly';
+    alignItems: 'stretch' | 'flex-start' | 'center' | 'flex-end' | 'baseline';
+    gap: number;
+}
+
+const flexDirectionOptions: { value: FlexboxProps['flexDirection']; label: string; icon: React.ElementType }[] = [
   { value: 'row', label: 'Row', icon: Rows },
   { value: 'column', label: 'Column', icon: Columns },
   { value: 'row-reverse', label: 'Row Reverse', icon: Rows },
@@ -93,13 +98,11 @@ const alignItemsOptions = {
 export default function FlexboxForgePage() {
   const { toast } = useToast();
   
-  const [flexDirection, setFlexDirection] = useState<GenerateCssCodeInput['flexDirection']>('row');
-  const [justifyContent, setJustifyContent] = useState<GenerateCssCodeInput['justifyContent']>('center');
-  const [alignItems, setAlignItems] = useState<GenerateCssCodeInput['alignItems']>('center');
+  const [flexDirection, setFlexDirection] = useState<FlexboxProps['flexDirection']>('row');
+  const [justifyContent, setJustifyContent] = useState<FlexboxProps['justifyContent']>('center');
+  const [alignItems, setAlignItems] = useState<FlexboxProps['alignItems']>('center');
   const [gap, setGap] = useState(16);
   const [items, setItems] = useState([1, 2, 3]);
-  const [generatedCss, setGeneratedCss] = useState('');
-  const [isLoadingCss, setIsLoadingCss] = useState(true);
   const [activeTab, setActiveTab] = useState('css');
 
   const isRow = flexDirection.includes('row');
@@ -115,26 +118,9 @@ export default function FlexboxForgePage() {
     }
   }, [flexDirection, jcOptions, aiOptions, justifyContent, alignItems]);
 
-  useEffect(() => {
-    const fetchCss = async () => {
-      setIsLoadingCss(true);
-      try {
-        const input: GenerateCssCodeInput = { flexDirection, justifyContent, alignItems, gap };
-        const result = await generateCssCode(input);
-        setGeneratedCss(result.cssCode);
-      } catch (error) {
-        console.error('Failed to generate CSS:', error);
-        toast({
-          title: 'Error Generating CSS',
-          description: 'Could not connect to the AI service. Please try again later.',
-          variant: 'destructive',
-        });
-      } finally {
-        setIsLoadingCss(false);
-      }
-    };
-    fetchCss();
-  }, [flexDirection, justifyContent, alignItems, gap, toast]);
+  const generatedCss = useMemo(() => {
+    return `.container {\n  display: flex;\n  flex-direction: ${flexDirection};\n  justify-content: ${justifyContent};\n  align-items: ${alignItems};\n  gap: ${gap}px;\n}`;
+  }, [flexDirection, justifyContent, alignItems, gap]);
 
   const generatedReactStyle = useMemo(() => {
     const reactStyle: CSSProperties = {
@@ -316,15 +302,9 @@ export default function FlexboxForgePage() {
                 </TabsList>
                 <TabsContent value="css">
                   <div className="relative mt-4 h-48 w-full rounded-md bg-muted/50">
-                    {isLoadingCss ? (
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-                      </div>
-                    ) : (
-                      <pre className="h-full w-full overflow-auto p-4 text-sm font-mono">
-                        <code>{generatedCss}</code>
-                      </pre>
-                    )}
+                    <pre className="h-full w-full overflow-auto p-4 text-sm font-mono">
+                      <code>{generatedCss}</code>
+                    </pre>
                   </div>
                 </TabsContent>
                 <TabsContent value="react">
